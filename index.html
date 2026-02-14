@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ujian Dedi Jomok</title>
+  <style>
+    :root{
+      --bg1:#0ea5e9; --bg2:#a78bfa; --card:#ffffff;
+      --ink:#0f172a; --muted:#64748b; --good:#22c55e; --bad:#ef4444;
+      --accent:#f97316; --accent2:#22c55e; --shadow: 0 16px 40px rgba(2,6,23,.18);
+      --r:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 700px at 10% 10%, rgba(255,255,255,.35), transparent 60%),
+        radial-gradient(900px 600px at 90% 20%, rgba(255,255,255,.25), transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .wrap{width:min(980px, 100%);}
+    header{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:16px; margin-bottom:14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      color:white;
+    }
+    .logo{
+      width:48px; height:48px; border-radius:14px;
+      background: conic-gradient(from 210deg, #fde047, #fb7185, #60a5fa, #34d399, #fde047);
+      box-shadow: 0 10px 24px rgba(2,6,23,.22);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo::after{
+      content:"★";
+      position:absolute; inset:0;
+      display:grid; place-items:center;
+      color:rgba(15,23,42,.8);
+      font-size:22px; font-weight:900;
+      text-shadow: 0 2px 0 rgba(255,255,255,.55);
+      transform: rotate(-8deg);
+    }
+    .brand h1{margin:0; font-size:20px; line-height:1.1}
+    .brand p{margin:0; opacity:.9; font-size:13px}
+    .topActions{
+      display:flex; gap:10px; align-items:center;
+    }
+    .pill{
+      background: rgba(255,255,255,.18);
+      color:white;
+      border:1px solid rgba(255,255,255,.28);
+      padding:10px 12px;
+      border-radius:999px;
+      backdrop-filter: blur(8px);
+      display:flex; align-items:center; gap:8px;
+      box-shadow: 0 10px 24px rgba(2,6,23,.12);
+      font-weight:600;
+      font-size:13px;
+      user-select:none;
+    }
+    .pill b{font-variant-numeric: tabular-nums;}
+    .btn{
+      border:0;
+      border-radius:999px;
+      padding:11px 14px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow: 0 12px 24px rgba(2,6,23,.18);
+      transition:.15s transform, .15s filter;
+      display:inline-flex; gap:8px; align-items:center;
+      user-select:none;
+    }
+    .btn:hover{transform: translateY(-1px); filter:brightness(1.02)}
+    .btn:active{transform: translateY(0px); filter:brightness(.98)}
+    .btn.primary{background: linear-gradient(135deg, #fb7185, #f97316); color:white;}
+    .btn.ghost{
+      background: rgba(255,255,255,.16);
+      color:white;
+      border:1px solid rgba(255,255,255,.28);
+      box-shadow: 0 10px 24px rgba(2,6,23,.12);
+    }
+
+    .card{
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(255,255,255,.5);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardTop{
+      padding:16px 18px;
+      background:
+        radial-gradient(700px 260px at 20% 30%, rgba(34,197,94,.18), transparent 60%),
+        radial-gradient(700px 260px at 90% 20%, rgba(249,115,22,.18), transparent 55%),
+        rgba(255,255,255,.85);
+      border-bottom:1px solid rgba(15,23,42,.08);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      flex-wrap:wrap;
+    }
+    .player{
+      display:flex; align-items:center; gap:12px;
+    }
+    .avatar{
+      width:44px; height:44px; border-radius:16px;
+      background: radial-gradient(circle at 30% 20%, #fff, rgba(255,255,255,.2) 40%),
+                  linear-gradient(135deg, #60a5fa, #34d399);
+      box-shadow: 0 10px 22px rgba(2,6,23,.14);
+      position:relative;
+    }
+    .avatar::after{
+      content:"😊";
+      position:absolute; inset:0;
+      display:grid; place-items:center;
+      font-size:22px;
+      filter: drop-shadow(0 2px 0 rgba(255,255,255,.4));
+    }
+    .player .meta{line-height:1.1}
+    .player .meta .name{font-weight:900}
+    .player .meta .sub{font-size:12px; color:var(--muted); margin-top:4px}
+
+    .progressWrap{
+      flex: 1 1 240px;
+      min-width: 220px;
+      display:flex; gap:10px; align-items:center;
+      justify-content:flex-end;
+    }
+    .bar{
+      height:12px;
+      flex:1;
+      background: rgba(15,23,42,.08);
+      border-radius:999px;
+      overflow:hidden;
+      max-width: 360px;
+    }
+    .bar > i{
+      display:block; height:100%;
+      width:0%;
+      background: linear-gradient(90deg, #22c55e, #f97316, #fb7185);
+      border-radius:999px;
+      transition: width .25s ease;
+    }
+    .pct{font-weight:900; color:var(--ink); font-size:13px; min-width:52px; text-align:right}
+
+    .cardBody{padding:18px;}
+    .screen{display:none;}
+    .screen.active{display:block;}
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:16px;
+    }
+    @media (max-width: 840px){
+      .grid2{grid-template-columns: 1fr;}
+      .progressWrap{justify-content:stretch}
+    }
+
+    .panel{
+      background: white;
+      border-radius: var(--r);
+      border:1px solid rgba(15,23,42,.08);
+      box-shadow: 0 10px 24px rgba(2,6,23,.06);
+      overflow:hidden;
+    }
+    .panel h2{margin:0; padding:14px 14px 0 14px; font-size:16px}
+    .panel p{margin:0; padding:8px 14px 14px 14px; color:var(--muted); font-size:13px}
+    .panel .inner{padding:14px;}
+
+    .input{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(15,23,42,.14);
+      outline:none;
+      font-weight:700;
+      font-size:14px;
+      background: rgba(248,250,252,.9);
+    }
+    .input:focus{border-color: rgba(249,115,22,.7); box-shadow: 0 0 0 4px rgba(249,115,22,.15);}
+
+    .chipRow{display:flex; flex-wrap:wrap; gap:8px}
+    .chip{
+      padding:9px 10px;
+      border-radius:999px;
+      border:1px dashed rgba(15,23,42,.2);
+      background: rgba(2,6,23,.03);
+      font-weight:800;
+      font-size:12px;
+      color:var(--ink);
+      user-select:none;
+    }
+
+    .qTitle{
+      font-size:18px; font-weight:950; margin:0 0 8px 0;
+      letter-spacing:.1px;
+    }
+    .qMeta{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin-bottom:14px;
+    }
+    .tag{
+      font-size:12px; font-weight:900;
+      padding:7px 10px; border-radius:999px;
+      background: rgba(249,115,22,.12);
+      border:1px solid rgba(249,115,22,.25);
+      color:#9a3412;
+    }
+    .tag.blue{
+      background: rgba(59,130,246,.12);
+      border-color: rgba(59,130,246,.25);
+      color:#1e40af;
+    }
+    .tag.green{
+      background: rgba(34,197,94,.12);
+      border-color: rgba(34,197,94,.25);
+      color:#166534;
+    }
+
+    .options{
+      display:grid; gap:10px;
+    }
+    .opt{
+      border:1px solid rgba(15,23,42,.12);
+      border-radius: 16px;
+      padding:12px 12px;
+      background: rgba(248,250,252,.9);
+      display:flex; gap:10px; align-items:flex-start;
+      cursor:pointer;
+      transition:.12s transform, .12s border-color, .12s background;
+      user-select:none;
+    }
+    .opt:hover{transform: translateY(-1px); border-color: rgba(249,115,22,.4); background: white;}
+    .opt input{margin-top:3px; transform: scale(1.1);}
+    .opt .txt{font-weight:750}
+    .opt small{display:block; color:var(--muted); font-weight:650; margin-top:2px}
+
+    .footerActions{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:10px; flex-wrap:wrap;
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid rgba(15,23,42,.08);
+    }
+    .hint{color:var(--muted); font-size:13px; font-weight:650}
+
+    .resultHero{
+      padding:14px;
+      border-radius: var(--r);
+      background:
+        radial-gradient(700px 260px at 20% 30%, rgba(34,197,94,.18), transparent 60%),
+        radial-gradient(700px 260px at 90% 20%, rgba(249,115,22,.18), transparent 55%),
+        rgba(248,250,252,.9);
+      border:1px solid rgba(15,23,42,.08);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      flex-wrap:wrap;
+    }
+    .score{
+      font-size:38px; font-weight:1000; letter-spacing:-.5px; margin:0;
+    }
+    .grade{
+      font-weight:1000; padding:10px 12px; border-radius:999px;
+      border:1px solid rgba(15,23,42,.12);
+      background:white;
+    }
+    .review{
+      margin-top:14px;
+      display:grid; gap:10px;
+    }
+    .revItem{
+      background:white;
+      border:1px solid rgba(15,23,42,.08);
+      border-radius: 16px;
+      padding:12px;
+    }
+    .revItem .line1{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+    .revItem .q{font-weight:950}
+    .badge{
+      font-weight:950; font-size:12px; padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(2,6,23,.03);
+    }
+    .badge.good{background: rgba(34,197,94,.12); border-color: rgba(34,197,94,.22); color:#166534;}
+    .badge.bad{background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.22); color:#991b1b;}
+    .ans{margin-top:6px; color:var(--muted); font-weight:650}
+    canvas#fx{position:fixed; inset:0; pointer-events:none;}
+  </style>
+</head>
+<body>
+  <canvas id="fx"></canvas>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>Ujian Seru Kelas 6 SD</h1>
+          <p>Belajar sambil main — jawab cepat, dapat bintang ⭐</p>
+        </div>
+      </div>
+      <div class="topActions">
+        <div class="pill" title="Waktu tersisa">
+          ⏱️ <span>Sisa:</span> <b id="timeLeft">--:--</b>
+        </div>
+        <button class="btn ghost" id="btnSound" type="button" title="Nyalakan/Matikan suara">
+          🔊 <span id="soundLabel">Sound: ON</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="cardTop">
+        <div class="player">
+          <div class="avatar"></div>
+          <div class="meta">
+            <div class="name" id="playerName">Pemain</div>
+            <div class="sub" id="playerSub">Siap mulai ujian? 🚀</div>
+          </div>
+        </div>
+
+        <div class="progressWrap">
+          <div class="bar" aria-label="Progress">
+            <i id="barFill"></i>
+          </div>
+          <div class="pct" id="pctText">0%</div>
+        </div>
+      </div>
+
+      <div class="cardBody">
+        <!-- START SCREEN -->
+        <section class="screen active" id="screenStart">
+          <div class="grid2">
+            <div class="panel">
+              <h2>Masuk Arena Ujian 🎮</h2>
+              <p>Isi nama kamu, pilih mode, lalu mulai. Kamu bisa lihat hasil + pembahasannya setelah selesai.</p>
+              <div class="inner">
+                <label style="font-weight:900; font-size:13px;">Nama</label>
+                <input class="input" id="inpName" placeholder="Misal: Budi" maxlength="24" />
+                <div style="height:10px"></div>
+
+                <label style="font-weight:900; font-size:13px;">Mode</label>
+                <div class="chipRow" style="margin-top:8px">
+                  <span class="chip">⏱️ Timer: 10 menit</span>
+                  <span class="chip">🧠 Campur Mapel</span>
+                  <span class="chip">⭐ Skor + Bintang</span>
+                </div>
+
+                <div style="height:14px"></div>
+                <button class="btn primary" id="btnStart" type="button">🚀 Mulai Ujian</button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h2>Aturan Main 📜</h2>
+              <p>Tenang, ini ujian yang ramah. Fokus aja ya!</p>
+              <div class="inner">
+                <ul style="margin:0; padding-left:18px; color:var(--ink); font-weight:700; line-height:1.6">
+                  <li>Setiap soal pilih 1 jawaban.</li>
+                  <li>Kamu bisa <b>Kembali</b> ke soal sebelumnya.</li>
+                  <li>Nilai muncul di akhir + review jawaban.</li>
+                  <li>Kalau waktu habis, otomatis selesai.</li>
+                </ul>
+                <div style="height:12px"></div>
+                <div class="chipRow">
+                  <span class="chip">Tip: baca pelan-pelan 😄</span>
+                  <span class="chip">Tip: cek lagi sebelum kirim ✅</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- QUIZ SCREEN -->
+        <section class="screen" id="screenQuiz">
+          <div class="panel" style="margin-bottom:12px;">
+            <div class="inner">
+              <div class="qMeta">
+                <span class="tag" id="tagSubject">Mapel</span>
+                <span class="tag blue" id="tagNumber">Soal 1/10</span>
+                <span class="tag green" id="tagStars">⭐ 0</span>
+              </div>
+              <h3 class="qTitle" id="qText">Pertanyaan muncul di sini</h3>
+              <div class="options" id="opts"></div>
+
+              <div class="footerActions">
+                <div class="hint" id="hintText">Pilih jawaban lalu lanjut ➜</div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                  <button class="btn ghost" id="btnPrev" type="button">⬅️ Kembali</button>
+                  <button class="btn primary" id="btnNext" type="button">Lanjut ➡️</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hint" style="color:white; opacity:.95; text-align:center; font-weight:800;">
+            Progres kamu otomatis tersimpan selama halaman tidak ditutup.
+          </div>
+        </section>
+
+        <!-- RESULT SCREEN -->
+        <section class="screen" id="screenResult">
+          <div class="resultHero">
+            <div>
+              <div style="font-weight:900; color:var(--muted);">Hasil Ujian</div>
+              <p class="score" id="scoreText">0</p>
+              <div style="color:var(--muted); font-weight:750;" id="scoreSub">—</div>
+            </div>
+            <div class="grade" id="gradePill">Nilai: -</div>
+          </div>
+
+          <div class="footerActions" style="border-top:0; padding-top:0; margin-top:12px;">
+            <div class="hint">Mau coba lagi untuk nilai lebih tinggi?</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn ghost" id="btnReview" type="button">🧾 Lihat Review</button>
+              <button class="btn primary" id="btnRetry" type="button">🔁 Ulangi Ujian</button>
+            </div>
+          </div>
+
+          <div class="review" id="reviewBox" style="display:none;"></div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+/** =========================
+ *  EDIT SOAL DI SINI
+ *  ========================= */
+const QUESTIONS = [
+  { subject:"Matematika", q:"Hasil dari Mas Amba ng0cok amaa rusdi ...", options:["1/2","1","3/8","2"], answer:1, explain:"Penyebut sama (4), jumlahkan pembilang: 3+1=4 → 4/4 = 1." },
+  { subject:"Matematika", q:"KPK dari 6 dan 8 adalah ...", options:["12","18","24","48"], answer:2, explain:"Kelipatan 6: 6,12,18,24... Kelipatan 8: 8,16,24... Bertemu di 24." },
+  { subject:"IPA", q:"Perubahan wujud dari cair menjadi gas disebut ...", options:["Mengembun","Menguap","Mencair","Membeku"], answer:1, explain:"Cair → gas = menguap." },
+  { subject:"IPA", q:"Alat pernapasan utama pada manusia adalah ...", options:["Jantung","Paru-paru","Lambung","Hati"], answer:1, explain:"Pernapasan utama terjadi di paru-paru." },
+  { subject:"Bahasa Indonesia", q:"Kalimat utama biasanya terdapat pada paragraf ...", options:["Narasi","Eksposisi","Deskripsi","Dialog"], answer:1, explain:"Paragraf eksposisi berisi gagasan/penjelasan; kalimat utama menyatakan gagasan pokok." },
+  { subject:"Bahasa Indonesia", q:"Lawan kata 'rajin' adalah ...", options:["Gigih","Malas","Cepat","Sabar"], answer:1, explain:"Rajin ↔ malas." },
+  { subject:"IPS", q:"Contoh kegiatan ekonomi di bidang distribusi adalah ...", options:["Menanam padi","Menjahit baju","Mengangkut barang ke toko","Menangkap ikan"], answer:2, explain:"Distribusi = menyalurkan barang dari produsen ke konsumen (misal mengangkut/menjual)." },
+  { subject:"IPS", q:"Indonesia terletak di antara dua benua, yaitu ...", options:["Asia dan Afrika","Asia dan Australia","Eropa dan Asia","Amerika dan Australia"], answer:1, explain:"Letak geografis Indonesia: di antara Benua Asia dan Australia." },
+  { subject:"PPKn", q:"Sila ke-2 Pancasila berbunyi ...", options:["Ketuhanan Yang Maha Esa","Kemanusiaan yang adil dan beradab","Persatuan Indonesia","Kerakyatan yang dipimpin oleh hikmat kebijaksanaan"], answer:1, explain:"Sila ke-2: Kemanusiaan yang adil dan beradab." },
+  { subject:"PPKn", q:"Contoh sikap musyawarah di sekolah adalah ...", options:["Memaksa teman mengikuti pendapat kita","Membiarkan masalah tanpa solusi","Berdiskusi untuk memilih ketua kelas","Bertengkar saat berbeda pendapat"], answer:2, explain:"Musyawarah = berdiskusi untuk mufakat, contohnya memilih ketua kelas bersama." },
+];
+
+/** =========================
+ *  LOGIC APLIKASI
+ *  ========================= */
+const $ = (s)=>document.querySelector(s);
+
+const screenStart  = $("#screenStart");
+const screenQuiz   = $("#screenQuiz");
+const screenResult = $("#screenResult");
+
+const inpName = $("#inpName");
+const btnStart = $("#btnStart");
+
+const qText = $("#qText");
+const optsBox = $("#opts");
+const btnPrev = $("#btnPrev");
+const btnNext = $("#btnNext");
+
+const tagSubject = $("#tagSubject");
+const tagNumber  = $("#tagNumber");
+const tagStars   = $("#tagStars");
+
+const barFill = $("#barFill");
+const pctText = $("#pctText");
+const timeLeft = $("#timeLeft");
+
+const playerName = $("#playerName");
+const playerSub  = $("#playerSub");
+
+const scoreText = $("#scoreText");
+const scoreSub  = $("#scoreSub");
+const gradePill = $("#gradePill");
+const btnRetry  = $("#btnRetry");
+const btnReview = $("#btnReview");
+const reviewBox = $("#reviewBox");
+
+const btnSound = $("#btnSound");
+const soundLabel = $("#soundLabel");
+
+let state = {
+  name: "Pemain",
+  idx: 0,
+  answers: Array(QUESTIONS.length).fill(null),
+  stars: 0,
+  startedAt: null,
+  durationSec: 10 * 60, // 10 menit
+  soundOn: true,
+  timer: null,
+  ended: false,
+};
+
+function show(screen){
+  [screenStart, screenQuiz, screenResult].forEach(s=>s.classList.remove("active"));
+  screen.classList.add("active");
+}
+
+function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+
+function fmtTime(sec){
+  sec = Math.max(0, Math.floor(sec));
+  const m = String(Math.floor(sec/60)).padStart(2,"0");
+  const s = String(sec%60).padStart(2,"0");
+  return `${m}:${s}`;
+}
+
+function beep(type="tap"){
+  if(!state.soundOn) return;
+  // tiny oscillator sound (no file needed)
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = "sine";
+  const now = ctx.currentTime;
+  const freq = type==="good" ? 880 : type==="bad" ? 180 : 520;
+  o.frequency.setValueAtTime(freq, now);
+  g.gain.setValueAtTime(0.0001, now);
+  g.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(now);
+  o.stop(now + 0.13);
+  setTimeout(()=>ctx.close(), 250);
+}
+
+function updateHeader(){
+  playerName.textContent = state.name;
+}
+
+function updateProgress(){
+  const done = state.answers.filter(a=>a!==null).length;
+  const pct = Math.round((done / QUESTIONS.length) * 100);
+  barFill.style.width = pct + "%";
+  pctText.textContent = pct + "%";
+  tagNumber.textContent = `Soal ${state.idx+1}/${QUESTIONS.length}`;
+  tagStars.textContent = `⭐ ${state.stars}`;
+}
+
+function renderQuestion(){
+  const item = QUESTIONS[state.idx];
+  tagSubject.textContent = item.subject;
+  qText.textContent = item.q;
+
+  optsBox.innerHTML = "";
+  item.options.forEach((opt, i)=>{
+    const id = `opt_${state.idx}_${i}`;
+    const wrap = document.createElement("label");
+    wrap.className = "opt";
+    wrap.setAttribute("for", id);
+
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "opt";
+    input.id = id;
+    input.value = i;
+    input.checked = (state.answers[state.idx] === i);
+
+    const text = document.createElement("div");
+    text.className = "txt";
+    text.innerHTML = `${String.fromCharCode(65+i)}. ${opt}`;
+
+    wrap.appendChild(input);
+    wrap.appendChild(text);
+
+    wrap.addEventListener("click", ()=>{
+      state.answers[state.idx] = i;
+      updateProgress();
+      beep("tap");
+      $("#hintText").textContent = "Mantap! Klik Lanjut untuk soal berikutnya ➜";
+      saveLocal();
+    });
+
+    optsBox.appendChild(wrap);
+  });
+
+  btnPrev.disabled = state.idx === 0;
+  btnNext.textContent = (state.idx === QUESTIONS.length - 1) ? "Selesai ✅" : "Lanjut ➡️";
+  $("#hintText").textContent = (state.answers[state.idx]===null)
+    ? "Pilih satu jawaban ya 🙂"
+    : "Jawaban tersimpan ✅";
+}
+
+function computeScore(){
+  let correct = 0;
+  QUESTIONS.forEach((it, i)=>{
+    if(state.answers[i] === it.answer) correct++;
+  });
+  const score = Math.round((correct / QUESTIONS.length) * 100);
+  return {correct, score};
+}
+
+function gradeFrom(score){
+  if(score >= 90) return "A+ Hebat!";
+  if(score >= 80) return "A Keren!";
+  if(score >= 70) return "B Bagus!";
+  if(score >= 60) return "C Lumayan!";
+  return "D Ayo latihan lagi!";
+}
+
+function endQuiz(auto=false){
+  if(state.ended) return;
+  state.ended = true;
+  clearInterval(state.timer);
+
+  const {correct, score} = computeScore();
+  scoreText.textContent = score;
+  scoreSub.textContent = `${correct} benar dari ${QUESTIONS.length} soal${auto ? " (selesai karena waktu habis)" : ""}.`;
+  gradePill.textContent = "Nilai: " + gradeFrom(score);
+
+  // stars: +2 per correct, + bonus if finish before time
+  const elapsed = Math.floor((Date.now() - state.startedAt)/1000);
+  const remain = Math.max(0, state.durationSec - elapsed);
+  const bonus = remain > 60 ? 10 : remain > 0 ? 5 : 0;
+  state.stars = correct * 2 + bonus;
+  tagStars.textContent = `⭐ ${state.stars}`;
+
+  show(screenResult);
+  playerSub.textContent = "Selesai! Lihat nilaimu 🎉";
+  updateProgress();
+  saveLocal();
+
+  if(score >= 70) { beep("good"); confettiBurst(); }
+  else { beep("bad"); }
+}
+
+function tick(){
+  const elapsed = Math.floor((Date.now() - state.startedAt)/1000);
+  const remain = state.durationSec - elapsed;
+  timeLeft.textContent = fmtTime(remain);
+  if(remain <= 0) endQuiz(true);
+}
+
+function startQuiz(){
+  state.name = inpName.value.trim() || "Pemain";
+  state.idx = 0;
+  state.answers = Array(QUESTIONS.length).fill(null);
+  state.stars = 0;
+  state.startedAt = Date.now();
+  state.ended = false;
+
+  updateHeader();
+  playerSub.textContent = "Semangat! Kamu pasti bisa 💪";
+  show(screenQuiz);
+
+  renderQuestion();
+  updateProgress();
+
+  clearInterval(state.timer);
+  tick();
+  state.timer = setInterval(tick, 250);
+
+  saveLocal();
+}
+
+btnStart.addEventListener("click", ()=>{
+  beep("tap");
+  startQuiz();
+});
+
+btnPrev.addEventListener("click", ()=>{
+  beep("tap");
+  state.idx = clamp(state.idx - 1, 0, QUESTIONS.length-1);
+  renderQuestion();
+  updateProgress();
+  saveLocal();
+});
+
+btnNext.addEventListener("click", ()=>{
+  // must answer?
+  if(state.answers[state.idx] === null){
+    beep("bad");
+    $("#hintText").textContent = "Ups, pilih jawaban dulu ya 🙂";
+    return;
+  }
+  beep("tap");
+  if(state.idx === QUESTIONS.length - 1){
+    endQuiz(false);
+  } else {
+    state.idx++;
+    renderQuestion();
+    updateProgress();
+    saveLocal();
+  }
+});
+
+btnRetry.addEventListener("click", ()=>{
+  beep("tap");
+  reviewBox.style.display = "none";
+  reviewBox.innerHTML = "";
+  show(screenStart);
+  playerSub.textContent = "Siap mulai ujian? 🚀";
+  timeLeft.textContent = fmtTime(state.durationSec);
+  clearLocal();
+});
+
+btnReview.addEventListener("click", ()=>{
+  beep("tap");
+  if(reviewBox.style.display === "none"){
+    reviewBox.style.display = "grid";
+    renderReview();
+    btnReview.textContent = "🙈 Sembunyikan Review";
+  } else {
+    reviewBox.style.display = "none";
+    btnReview.textContent = "🧾 Lihat Review";
+  }
+});
+
+btnSound.addEventListener("click", ()=>{
+  state.soundOn = !state.soundOn;
+  soundLabel.textContent = "Sound: " + (state.soundOn ? "ON" : "OFF");
+  beep("tap");
+  saveLocal();
+});
+
+/** ===== Review ===== */
+function renderReview(){
+  reviewBox.innerHTML = "";
+  QUESTIONS.forEach((it, i)=>{
+    const your = state.answers[i];
+    const ok = your === it.answer;
+
+    const div = document.createElement("div");
+    div.className = "revItem";
+    div.innerHTML = `
+      <div class="line1">
+        <div class="q">#${i+1} (${it.subject}) — ${it.q}</div>
+        <div class="badge ${ok ? "good" : "bad"}">${ok ? "BENAR ✅" : "SALAH ❌"}</div>
+      </div>
+      <div class="ans">Jawaban kamu: <b>${your===null?"(kosong)": String.fromCharCode(65+your)+". "+it.options[your]}</b></div>
+      <div class="ans">Jawaban benar: <b>${String.fromCharCode(65+it.answer)}. ${it.options[it.answer]}</b></div>
+      <div class="ans">Pembahasan: ${it.explain}</div>
+    `;
+    reviewBox.appendChild(div);
+  });
+}
+
+/** ===== Local storage ===== */
+const KEY = "ujian_seru_kls6_v1";
+function saveLocal(){
+  const data = {
+    ...state,
+    timer: null, // don't store
+  };
+  localStorage.setItem(KEY, JSON.stringify(data));
+}
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return false;
+    const data = JSON.parse(raw);
+
+    // restore safe fields
+    state.name = data.name ?? state.name;
+    state.idx = data.idx ?? 0;
+    state.answers = Array.isArray(data.answers) ? data.answers : state.answers;
+    state.stars = data.stars ?? 0;
+    state.startedAt = data.startedAt ?? null;
+    state.durationSec = data.durationSec ?? state.durationSec;
+    state.soundOn = data.soundOn ?? true;
+    state.ended = data.ended ?? false;
+
+    soundLabel.textContent = "Sound: " + (state.soundOn ? "ON" : "OFF");
+    updateHeader();
+
+    // if ongoing and has startedAt, resume quiz screen
+    if(state.startedAt && !state.ended){
+      show(screenQuiz);
+      renderQuestion();
+      updateProgress();
+      playerSub.textContent = "Lanjutkan! Kamu hampir selesai 🏁";
+      clearInterval(state.timer);
+      tick();
+      state.timer = setInterval(tick, 250);
+      return true;
+    }
+    // if ended, show result
+    if(state.ended){
+      show(screenResult);
+      const {correct, score} = computeScore();
+      scoreText.textContent = score;
+      scoreSub.textContent = `${correct} benar dari ${QUESTIONS.length} soal.`;
+      gradePill.textContent = "Nilai: " + gradeFrom(score);
+      updateProgress();
+      playerSub.textContent = "Keren! Kamu sudah selesai 🎉";
+      timeLeft.textContent = "00:00";
+      return true;
+    }
+    return false;
+  }catch(e){ return false; }
+}
+function clearLocal(){ localStorage.removeItem(KEY); }
+
+/** ===== Confetti (simple) ===== */
+const fx = document.getElementById("fx");
+const ctx = fx.getContext("2d");
+let confetti = [];
+function resizeFx(){
+  fx.width = window.innerWidth * devicePixelRatio;
+  fx.height = window.innerHeight * devicePixelRatio;
+}
+window.addEventListener("resize", resizeFx);
+resizeFx();
+
+function confettiBurst(){
+  const N = 160;
+  const w = fx.width, h = fx.height;
+  for(let i=0;i<N;i++){
+    confetti.push({
+      x: (w*0.2) + Math.random()*(w*0.6),
+      y: h*0.15 + Math.random()*20,
+      vx: (Math.random()-0.5)*7,
+      vy: Math.random()*6 + 2,
+      g: 0.14 + Math.random()*0.08,
+      s: 5 + Math.random()*9,
+      r: Math.random()*Math.PI,
+      vr: (Math.random()-0.5)*0.25,
+      life: 220 + Math.random()*120
+    });
+  }
+  animateFx();
+}
+
+let animRunning=false;
+function animateFx(){
+  if(animRunning) return;
+  animRunning = true;
+
+  function step(){
+    ctx.clearRect(0,0,fx.width,fx.height);
+    confetti = confetti.filter(p=>p.life>0);
+
+    confetti.forEach(p=>{
+      p.life--;
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.r += p.vr;
+
+      // simple color cycle by x
+      const hue = (p.x / fx.width) * 360;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.fillStyle = `hsl(${hue}, 90%, 60%)`;
+      ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s*0.65);
+      ctx.restore();
+    });
+
+    if(confetti.length>0){
+      requestAnimationFrame(step);
+    } else {
+      animRunning=false;
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+/** init */
+timeLeft.textContent = fmtTime(state.durationSec);
+loadLocal();
+</script>
+</body>
+</html>
